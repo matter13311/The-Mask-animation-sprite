@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="A working example of sprite animation." />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  </head>
+  <style>
+    button{
+      border:1px solid black;
+      font-size: 20px;
+    }
+    #canvas {
+      background: rgb(95, 95, 95);
+      border: 1px solid black;
+    }
+  </style>
+  <body>
+    <div class="container" id="text_prompt"style="border:1px solid black; margin-top: 30%; ">
+      <div class="row" >
+        <div class="col text-center" style="border:1px solid black;">
+          <h1 >PRESS ANY ARROW KEY TO BEGIN</h1>
+        </div>
+      </div>
+      <div class="row">
+      <div class="col">
+        <h5>INSTRUCTIONS:</h5>
+        <h8>
+          Arrow keys to move.
+          <br>
+          CAPSLOCK to toggle sneak.
+          <br>
+          Shift to bring out hammer.
+        </h8>
+      </div>
+      </div>
+
+    </div>
+    
+
+    <div id="whole_thing" class="container mt-5" style="border:1px solid black; display: none;" >
+      <div class="row">
+        <div id="canvas-div"class="col" style="border:1px solid black; height: 400px; ">
+          <canvas id="canvas"></canvas> <!-- width="650" height="400"-->
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col p-3" style="border:1px solid black;">
+          <div class="row">
+              <div class="col text-center">
+                <button id="up_button" style="margin-left: 20px;">&#8593</button>
+              </div>
+          </div>
+          <div class="row">
+            <div class="col text-center" style=" padding-left: 35px;">
+              <button  id="left_button">&#8592</button>
+              <button  id="right_button">&#8594</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-center">
+              <button  id="down_button" style="margin-left: 20px;">&#8595</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col"style="border:1px solid black;">
+          <div id="capslock_button" style="border:1px solid black; width: 100px; height: 30px;  padding-left: 15px; margin: 15px 15px 15px 15px ">
+            CAPSLOCK
+          </div>
+          <button id="hammer_button">Hammer Time!</button>
+        </div>
+
+        <div class="col p-4">
+          <p id = canvas_text_width>canvas_width</p>
+
+          <p id = canvas_text_height>canvas_height</p>
+        </div>
+        <div class="col p-4">
+          <p>
+            Arrow keys to move.
+            <br>
+            CAPSLOCK to toggle sneak.
+            <br>
+            Hold shift to bring out hammer.
+          </p>
+        </div>
+      </div>
+      <!--
+      -->
+
+    </div>
+    
+
+    <script>
+      let firstKeyPressed = false;
+      const canvas_text_width = document.getElementById("canvas_text_width");
+      const canvas_text_height = document.getElementById("canvas_text_height");
+      const whole_thing = document.getElementById("whole_thing");
+      const text_prompt = document.getElementById("text_prompt");
+      var canvas_div = document.getElementById("canvas-div");
+      var left_button = document.getElementById("left_button");
+      var right_button = document.getElementById("right_button");
+      var up_button = document.getElementById("up_button");
+      var down_button = document.getElementById("down_button");
+      var hammer_button = document.getElementById("hammer_button");
+      var capslock_button = document.getElementById("capslock_button");
+
+
+      var capsLock_toggle = false;
+
+      var retick_speed;
+
+      window.onkeydown = function(e) {
+        if(firstKeyPressed == false){
+          switch (e.keyCode) {
+          case 37: //left
+          whole_thing.style.display = "block";
+          text_prompt.style.display = "none";
+          firstKeyPressed = true;
+
+          break;
+
+          case 38: //up
+          whole_thing.style.display = "block";
+          text_prompt.style.display = "none";
+          firstKeyPressed = true;
+            break;
+
+          case 39: //right
+          whole_thing.style.display = "block";
+          text_prompt.style.display = "none";
+          firstKeyPressed = true;
+            break;
+
+          case 40: //down
+          whole_thing.style.display = "block";
+          text_prompt.style.display = "none";
+          firstKeyPressed = true;
+            break;
+        }
+        }
+        
+      };
+
+
+
+      window.addEventListener('DOMContentLoaded', (event) => {
+        window.addEventListener("keyup", function(event) {
+        if (event.getModifierState("CapsLock")) {
+          capsLock_toggle = true;
+          //console.log("capslock is on");
+          capslock_button.style.background = "green";
+          capslock_button.style.color = "white";
+        } else {
+          capsLock_toggle = false;
+          //console.log("capslock is off");
+          capslock_button.style.background = "white";
+          capslock_button.style.color = "black";
+        }
+      });
+      document.onkeyup = function(e) {
+        switch (e.keyCode) {
+          case 16: //shift
+            hammer_button.style.background = "white";
+            left_button.style.background = "white";
+            right_button.style.background = "white";
+            up_button.style.background = "white";
+            down_button.style.background = "white";
+
+            stop_moving = true;
+            up = false;
+            down = false;
+            left = false;
+            right = false;
+            hammering = false;
+            break;
+
+          case 32: //space
+          hammer_button.style.background = "white";
+            left_button.style.background = "white";
+            right_button.style.background = "white";
+            up_button.style.background = "white";
+            down_button.style.background = "white";
+
+
+            stop_moving = true;
+            up = false;
+            down = false;
+            left = false;
+            right = false;
+            hammering = false;
+            break;
+
+          case 37: //left
+          hammer_button.style.background = "white";
+            left_button.style.background = "white";
+            right_button.style.background = "white";
+            up_button.style.background = "white";
+            down_button.style.background = "white";
+
+            stop_moving = true;
+            up = false;
+            down = false;
+            left = false;
+            right = false;
+            hammering = false;
+            break;
+
+          case 38: //up
+          hammer_button.style.background = "white";
+            left_button.style.background = "white";
+            right_button.style.background = "white";
+            up_button.style.background = "white";
+            down_button.style.background = "white";
+
+
+            stop_moving = true;
+            up = false;
+            down = false;
+            left = false;
+            right = false;
+            hammering = false;
+            break;
+
+          case 39: //right
+          hammer_button.style.background = "white";
+            left_button.style.background = "white";
+            right_button.style.background = "white";
+            up_button.style.background = "white";
+            down_button.style.background = "white";
+
+
+            stop_moving = true;
+            up = false;
+            down = false;
+            left = false;
+            right = false;
+            hammering = false;
+            break;
+
+          case 40: //down
+          hammer_button.style.background = "white";
+            left_button.style.background = "white";
+            right_button.style.background = "white";
+            up_button.style.background = "white";
+            down_button.style.background = "white";
+
+
+            stop_moving = true;
+            up = false;
+            down = false;
+            left = false;
+            right = false;
+            hammering = false;
+            break;
+        }
+      };
+      document.onkeydown = function(e) {
+        switch (e.keyCode) {
+          case 16: //shift
+            hammer_button.style.background = "green";
+            left_button.style.background = "white";
+            right_button.style.background = "white";
+            up_button.style.background = "white";
+            down_button.style.background = "white";
+
+
+            stop_moving = false;
+            up = false;
+            down = false;
+            left = false;
+            right = false;
+            hammering = true;
+            break;
+
+          case 32: //space
+            hammer_button.style.background = "white";
+            left_button.style.background = "white";
+            right_button.style.background = "white";
+            up_button.style.background = "white";
+            down_button.style.background = "white";
+
+
+            stop_moving = true;
+            up = false;
+            down = false;
+            left = false;
+            right = false;
+            hammering = false;
+            break;
+
+          case 37: //left
+            hammer_button.style.background = "white";
+            left_button.style.background = "green";
+            right_button.style.background = "white";
+            up_button.style.background = "white";
+            down_button.style.background = "white";
+
+
+            up = false;
+            down = false;
+            left = true;
+            right = false;
+            stop_moving = false;
+            hammering = false;
+            break;
+
+          case 38: //up
+            hammer_button.style.background = "white";
+            left_button.style.background = "white";
+            right_button.style.background = "white";
+            up_button.style.background = "green";
+            down_button.style.background = "white";
+
+
+            up = true;
+            down = false;
+            left = false;
+            right = false;
+            stop_moving = false;
+            hammering = false;
+            break;
+
+          case 39: //right
+            hammer_button.style.background = "white";
+            left_button.style.background = "white";
+            right_button.style.background = "green";
+            up_button.style.background = "white";
+            down_button.style.background = "white";
+
+
+            up = false;
+            down = false;
+            left = false;
+            right = true;
+            stop_moving = false;
+            hammering = false;
+            break;
+
+          case 40: //down
+            hammer_button.style.background = "white";
+            left_button.style.background = "white";
+            right_button.style.background = "white";
+            up_button.style.background = "white";
+            down_button.style.background = "green";
+
+            up = false;
+            down = true;
+            left = false;
+            right = false;
+            stop_moving = false;
+            hammering = false;
+            break;
+        }
+      };
+
+/**
+      var map = {}; // You could also use an array
+      onkeydown = onkeyup = function(e){
+          e = e || event; // to deal with IE
+          map[e.keyCode] = e.type == 'keydown';
+          if(map[40] && map[39]){ 
+
+          }else if(map[17] && map[16] && map[66]){ 
+
+          }else if(map[17] && map[16] && map[67]){ 
+
+          }
+    }**/
+      var x = 150;
+      var y = 50;
+
+      var hammering = false;
+      var stop_moving = true;
+      var left = false;
+      var right = false;
+      var up = false;
+      var down = false;
+
+      var trackLeft = 1;
+      var trackRight = 0;
+
+      var srcx;
+      var srcy;
+      var hammersrcy;
+      //for running
+      var sheetWidth = 800;
+      var sheetHeight = 160;
+
+      //for standing
+      var standingSheetWidth = 320 / 4;
+      var standingSheetHeight = 160 / 2;
+
+      //for hammer
+      var hammerSheetWidth = 800 / 8;
+      var hammerSheetHeight = 200 / 2;
+
+      //for sneaking
+      var sneakSheetWidth = 960 / 12;
+      var sneakSheetHeight = 160 / 2;
+
+      var cols = 10;
+      var rows = 2;
+
+      var width = sheetWidth / cols;
+      var height = sheetHeight / rows; //80
+
+      var currentFrame = 0;
+
+      var character_sneak = new Image();
+      character_sneak.src = "resources/mask-sneaking.png";
+
+      var character_hammer = new Image();
+      character_hammer.src = "resources/mask-hammer.png";
+
+      var character_stand = new Image();
+      character_stand.src = "resources/mask-stand.png";
+
+      var character = new Image();
+      character.src = "resources/mask-running2.png";
+
+      var canvas = document.getElementById("canvas");
+      var ctx = canvas.getContext("2d");
+
+      function hammer() {
+        hammering = true;
+        stop_moving = false;
+        up = false;
+        down = false;
+        left = false;
+        right = false;
+      }
+      function stopMove() {
+        hammering = false;
+        stop_moving = true;
+        up = false;
+        down = false;
+        left = false;
+        right = false;
+      }
+      function moveUp() {
+        hammering = false;
+        up = true;
+        down = false;
+        left = false;
+        right = false;
+        stop_moving = false;
+      }
+      function moveDown() {
+        hammering = false;
+        up = false;
+        down = true;
+        left = false;
+        right = false;
+        stop_moving = false;
+      }
+      function moveRight() {
+        hammering = false;
+        up = false;
+        down = false;
+        left = false;
+        right = true;
+        stop_moving = false;
+      }
+      function moveLeft() {
+        hammering = false;
+        up = false;
+        down = false;
+        left = true;
+        right = false;
+        stop_moving = false;
+      }
+
+      function updateFrame() {
+        if (stop_moving == true) {
+          currentFrame = ++currentFrame % 4;
+          ctx.clearRect(x, y-55, hammerSheetWidth * 1.5, hammerSheetHeight+55 * 1.5);
+          srcx = currentFrame * standingSheetWidth;
+        } else if (hammering == true) {
+          currentFrame = ++currentFrame % 8;
+          ctx.clearRect(x, y-55, hammerSheetWidth * 1.5, hammerSheetHeight+55 * 1.5);
+          srcx = currentFrame * hammerSheetWidth;
+        } else {
+          if (capsLock_toggle == true) {
+            currentFrame = ++currentFrame % 12;
+          } else {
+            currentFrame = ++currentFrame % cols;
+          }
+
+          ctx.clearRect(x, y-55, hammerSheetWidth * 1.5, hammerSheetHeight+55 * 1.5);
+          srcx = currentFrame * width;
+          if (left == true) {
+            
+            if (capsLock_toggle == true) {
+              x -= 5;
+            } else {
+              x -= 15;
+            }
+            if( x <= -(width + 20)){
+              x = canvas.width;
+            }
+            srcy = trackRight * height;
+            hammersrcy = trackRight * 100;
+          } else if (right == true) {
+
+            if (capsLock_toggle == true) {
+              x += 5;
+            } else {
+              x += 15;
+            }
+            if(x >= canvas.width){
+              x = -(width + 20);
+            }
+
+            srcy = trackLeft * height;
+            hammersrcy = trackLeft * 100;
+          } else if (up == true) {
+
+            if (capsLock_toggle == true) {
+              y -= 5;
+            } else {
+              y -= 15;
+            }
+            if(y <= -(height + 20)){
+              y = canvas.height;
+            }
+            srcy = trackRight * height;
+            hammersrcy = trackRight * 100;
+          } else if (down == true) {
+
+            if (capsLock_toggle == true) {
+              y += 5;
+            } else {
+              y += 15;
+            }
+
+            if(y >= canvas.height){
+              y = -(height+20);
+            }
+            srcy = trackRight * height;
+          } else if (stop_moving == true) {
+            srcy = trackRight * height;
+            hammersrcy = trackRight * 100;
+          }
+        }
+      }
+      function drawImage() {
+        ctx.canvas.width = canvas_div.clientWidth-30;
+        ctx.canvas.height = canvas_div.clientHeight-10;
+        canvas_text_width.innerHTML = "Canvas width: " + canvas.width;
+        canvas_text_height.innerHTML = "Canvas height: " + canvas.height;
+        updateFrame();
+        if (stop_moving == true) {
+          ctx.drawImage(
+            character_stand,
+            srcx,
+            srcy,
+            standingSheetWidth,
+            standingSheetHeight,
+            x,
+            y,
+            standingSheetWidth * 1.5,
+            standingSheetHeight * 1.5
+          );
+        } else if (hammering == true) {
+              ctx.drawImage(
+              character_hammer,
+              srcx,
+              hammersrcy,
+              hammerSheetWidth,
+              hammerSheetHeight,
+              x,
+              y-40,
+              hammerSheetWidth * 1.5,
+              hammerSheetHeight * 1.5
+            );
+          
+          
+        } else if (capsLock_toggle == true) {
+          ctx.drawImage(
+            character_sneak,
+            srcx,
+            srcy,
+            width,
+            height,
+            x,
+            y,
+            width * 1.5,
+            height * 1.5
+          );
+        } else {
+
+          ctx.drawImage(
+            character,
+            srcx,
+            srcy,
+            width,
+            height,
+            x,
+            y,
+            width * 1.5,
+            height * 1.5
+          );
+        }
+      }
+
+      setInterval(function() {
+        drawImage();
+      }, 120);      
+      });
+
+
+    </script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>
+
